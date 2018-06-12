@@ -1,5 +1,7 @@
 package pers.li.orm.jdbc.mysql;
 
+import pers.li.orm.anno.Column;
+import pers.li.orm.anno.Table;
 import pers.li.orm.exception.ORMException;
 import pers.li.orm.jdbc.utils.JDBCUtils;
 import pers.li.orm.orm.ORMTemplate;
@@ -39,6 +41,13 @@ public class MysqlTemplate extends ORMTemplate {
         Class<?> aClass = entity.getClass();
         //获取类名--对应为表名
         String table = aClass.getSimpleName();
+        //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        //判断是否含有注解映射
+        Table annotation = aClass.getAnnotation(Table.class);
+        if(null!=annotation){
+            table=annotation.value().toUpperCase();
+        }
+        //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
         //拼接sql
         sql.append("INSERT INTO ").append(table).append("(");
         //获取类中属性名称
@@ -55,6 +64,13 @@ public class MysqlTemplate extends ORMTemplate {
                     Object fieldValue = declaredField.get(entity);
                     //判断该字段是否有值
                     if (null != fieldValue) {
+                        //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+                        //判断是否含有注解映射
+                        Column column = declaredField.getAnnotation(Column.class);
+                        if(null!=column){
+                            columnName=column.value().toUpperCase();
+                        }
+                        //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
                         //拼接字段部分
                         sql.append(columnName).append(",");
                         //保存参数列表信息
